@@ -1,0 +1,41 @@
+class Solution:
+    def minWindow(self, s: str, t: str) -> str:
+        if len(s) < len(t) or not t or not s:
+            return ""
+
+        t_count = Counter(t)
+        required = len(t_count) # required char
+        l, r = 0, 0
+        formed = 0  # window char
+        window_count = {}
+
+        res = float("inf"), None, None
+
+        while r < len(s):
+            char = s[r]
+            window_count[char] = window_count.get(char, 0) + 1
+
+            if char in t_count and window_count[char] == t_count[char]:
+                formed += 1
+
+            # update minimum
+            while l <= r and formed == required:
+                left_char = s[l]
+                if (r - l + 1) < res[0]:
+                    res = (r - l + 1, l, r)
+
+                window_count[left_char] -= 1
+                # jump out while loop and keep expanding with r pointer until valid again
+                if left_char in t_count and window_count[left_char] < t_count[left_char]:
+                    formed -= 1
+                l += 1
+            r += 1
+
+        if res[0] == float("inf"):
+            return ""
+        else:
+            return s[res[1]:res[2]+1]
+
+
+
+
